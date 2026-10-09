@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fbfaf7">
+  <meta name="description" content="Eight patterns for a useful personal agent with more privacy: local memory, explicit data-policy lanes, de-identified delegation and deliberate communications.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Good-enough privacy with Hermes Agent">
+  <meta property="og:description" content="Patterns for a useful personal agent with more privacy.">
+  <meta property="og:url" content="https://remi-td.github.io/hermes-good-enough-privacy/">
+  <meta property="og:image" content="https://remi-td.github.io/hermes-good-enough-privacy/assets/architecture.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://remi-td.github.io/hermes-good-enough-privacy/">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/site.css">
+  <title>Good-enough privacy with Hermes Agent</title>
+  <script type="module" src="assets/diagrams.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#article">Skip to article</a>
+  <header class="site-header">
+    <a class="site-mark" href="https://remi-td.github.io/hermes-good-enough-privacy/" aria-label="Good-enough privacy, home"><span class="mark-symbol" aria-hidden="true">◈</span><span>Good-enough privacy</span></a>
+    <a class="header-link" href="https://github.com/remi-td/hermes-good-enough-privacy">View source <span aria-hidden="true">↗</span></a>
+  </header>
+  <main id="article">
+    <div class="hero">
+      <div class="hero-inner">
+        <p class="eyebrow">A personal agent · Privacy by design</p>
+        <h1>Good-enough privacy with Hermes Agent</h1>
+        <p class="dek">Patterns for a useful personal agent with more privacy.</p>
+        <a class="read-link" href="#if-you-want-to-enjoy-the-party-you-need-to-give-up-some-things">Read the essay <span aria-hidden="true">↓</span></a>
+      </div>
+    </div>
+    <article class="article-body"><h2 id="if-you-want-to-enjoy-the-party-you-need-to-give-up-some-things">If you want to enjoy the party, you need to give up some things</h2>
+<p>We never have full privacy. To exist in the world is to emit information.
+A personal agent makes the trade-off sharper: the more it knows about your life, the more useful it becomes, and the more consequential it is when that knowledge travels.</p>
+<p>Privacy, then, is about choosing where the pieces of your life go, who gets to put them together, and which trade-offs you can live with.</p>
+<p>The internet is awash with easier stories to tell. For agent privacy, one playbook is to run everything locally. Pull an open-weight model into Ollama or <code>llama.cpp</code>, let your workstation sound like a jet engine all night, and wake up to a half-finished research report. I see the appeal, but for the complex reasoning I want, local inference still asks for more hardware, waiting or compromise in quality than I am willing to accept.</p>
+<p>On the other side sits the consumer default: use ChatGPT, Muse, or a &quot;second brain&quot; app. You get frontier intelligence for a modest monthly fee, but the top-up may be a growing record of your personal life. Every preference, medical worry, domestic squabble and late-night panic you share can become part of someone else&#39;s product.</p>
+<p><strong>Good-enough privacy</strong> is the pragmatic middle way: keep the durable picture of your life under your control, while using outside models when the benefit warrants it.</p>
+<p>The idea is simple in concept: use the discounted reasoning power of frontier models without handing any single provider the unified narrative of your life. With a self-hosted harness such as <a href="https://hermes-agent.nousresearch.com/">Hermes Agent</a>, I can separate memory from inference, route requests by data policy, and put checks where private context might leave the system.</p>
+<p>Here is my setup for <em>good-enough privacy</em>, broken down into eight patterns.</p>
+<p><img src="assets/architecture.png" alt="A map of the local agent, its memory, and the external services used for inference, research and communication"></p>
+<ol>
+<li><a href="#1-keep-memory-separate-from-the-model-provider">Keep memory separate from the model provider</a>.</li>
+<li><a href="#2-route-tasks-through-explicit-data-policy-lanes">Route tasks through explicit data-policy lanes</a>.</li>
+<li><a href="#3-inverted-delegation-escalation-to-frontier-intelligence">Escalate difficult questions after de-identification</a>.</li>
+<li><a href="#4-block-unsafe-delegation-at-the-handoff">Block unsafe delegation at the handoff</a>.</li>
+<li><a href="#5-treat-memory-layers-as-different-access-surfaces">Treat memory layers as different access surfaces</a>.</li>
+<li><a href="#6-keep-most-web-extraction-local">Keep most web extraction local</a>.</li>
+<li><a href="#7-give-the-agent-its-own-mail-and-calendar">Give the agent its own mail and calendar</a>.</li>
+<li><a href="#8-choose-the-messaging-channel-deliberately">Choose the messaging channel deliberately</a>.</li>
+</ol>
+<h2 id="1-keep-memory-separate-from-the-model-provider">1. Keep memory separate from the model provider</h2>
+<p>Your memories are all they need.</p>
+<p>Collecting and curating memories lets you connect the dots of your life so you can optimise it. If something else does it for you, then you are the one being optimised.</p>
+<p>The first pattern is therefore simple: <strong>separate persistent memory from model inference</strong>. That&#39;s what a harness like Hermes Agent helps me do. I can change models or providers without moving the records of my life with them, and choose what I share with whom.</p>
+<p>That separation is useful, but it is not anonymity. A provider can still see the prompts I send it and may link calls by session, API key or account. Rotating providers helps fragment the picture; it does not make the pieces disappear.</p>
+<h2 id="2-route-tasks-through-explicit-data-policy-lanes">2. Route tasks through explicit data-policy lanes</h2>
+<p>Once you use more than one model, choosing a provider becomes a policy decision. The same open-weight model may be served by several companies with different prices, locations and retention practices. Keeping up with their performance and policies inside the agent configuration quickly becomes messy. The whole point of this setup is to gain sleep hours.</p>
+<p><strong>The next pattern is inference service abstraction:</strong> let an LLM gateway handle provider routing so the agent configuration can focus on data and workflows.</p>
+<p>In practice, you can:</p>
+<ul>
+<li>Use a managed gateway such as <a href="https://openrouter.ai/blog/insights/llm-gateway/#what-an-llm-gateway-actually-does">OpenRouter</a> to access a broad choice of models and set policies for providers, retention, region and price. Its <a href="https://openrouter.ai/docs/guides/features/guardrails/overview">guardrails</a> can enforce ZDR for selected model groups. The gateway and the underlying inference provider both need to meet the policy you choose.</li>
+<li>Self-host a gateway and router with a tool such as <a href="https://www.litellm.ai/">LiteLLM</a>.</li>
+</ul>
+<p>As usual, you trade privacy surface for sleep time. A managed gateway can aggregate what you send through it. For my setup, the routing controls and a ZDR policy make that extra sleep attractive, provided I verify how both the gateway and the chosen provider handle my requests.</p>
+<p>Here is the model of the lanes I am trying to make legible. The names are aliases for a <em>capability</em> and a <em>data policy</em>, rather than promises about a permanent model choice:</p>
+<table>
+<thead>
+<tr>
+<th>Data policy and provider</th>
+<th>Flash</th>
+<th>Think</th>
+<th>Deep</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Local</strong> — on my host</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>ZDR</strong> — OpenRouter workspace/key</td>
+<td><code>zdr-flash</code> → selected fast model</td>
+<td><code>zdr-think</code> → selected reasoning model</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Lab</strong> — Codex subscription</td>
+<td><code>lab-flash</code></td>
+<td><code>lab-think</code></td>
+<td><code>lab-deep</code></td>
+</tr>
+<tr>
+<td><strong>Cheap</strong> — OpenRouter, for non-sensitive experiments</td>
+<td>—</td>
+<td><code>cheap-think</code> → <code>openrouter/free</code></td>
+<td>—</td>
+</tr>
+</tbody></table>
+<p>The dashes are intentional: I do not need a model in every cell. Model names and availability change; the alias should tell me which kind of task and disclosure the route permits. In Hermes, custom aliases help express this at the agent level. At the time of writing, alias resolution for scheduled jobs and delegation is still the subject of <a href="https://github.com/NousResearch/hermes-agent/pull/119331">an open PR</a>, so check your installed version before using these aliases there.</p>
+<p>The routing decision is easier to see as a sequence of questions:</p>
+<figure class="diagram"><div class="mermaid">flowchart TD
+    A[New task] --&gt; B{Does it contain private context?}
+    B -- No --&gt; C{Is this disposable or experimental?}
+    C -- Yes --&gt; D[Cheap lane]
+    C -- No --&gt; E[Choose a quality-appropriate approved lane]
+    B -- Yes --&gt; F{Can it stay local?}
+    F -- Yes --&gt; G[Local tools and memory]
+    F -- No --&gt; H[Minimum-necessary brief via ZDR lane]
+    H --&gt; I{Needs deeper reasoning?}
+    I -- No --&gt; J[Return answer]
+    I -- Yes --&gt; K[De-identify and check delegation]
+    K --&gt; L{Privacy guard allows it?}
+    L -- No --&gt; M[Revise locally or stop]
+    L -- Yes --&gt; N[Lab-deep worker]
+    N --&gt; O[Re-associate with private context locally]</div><figcaption>How requests move through the data-policy lanes</figcaption></figure>
+<p>The harness owns the routing decision. For a ZDR lane, the retention requirement also needs enforcement at the gateway, for example with a dedicated key or guardrail. A client-side setting can be missed by an auxiliary task or changed during a future configuration edit. Both the gateway and the underlying inference provider need to meet the chosen policy. A ZDR label is a contractual and operational claim to check, not a guarantee that no information leaves your machine.</p>
+<h2 id="3-inverted-delegation-escalation-to-frontier-intelligence">3. Inverted delegation: escalation to frontier intelligence</h2>
+<p>Frontier intelligence via API can be expensive at the volume I use. Consumer subscriptions to services such as OpenAI Codex, Claude or Gemini can make that reasoning much cheaper for me. The discount is hard to ignore.</p>
+<p>The issue is that the subscription endpoints I want to use do not give me the same Zero Data Retention (ZDR) assurance as my ZDR route. Worse, the personal questions that need deeper reasoning are often among the most sensitive: medical enquiries, legal friction, financial distress...</p>
+<p><strong>The pattern is escalation after de-identification</strong>: a fast model on the ZDR route handles the first pass and, when needed, sends a de-identified brief to a more capable model that I treat as less private. When the worker returns, the first agent re-associates its analysis with private context and presents the answer.</p>
+<p>The following hypothetical emergency illustrates how the handoff works in my live setup.</p>
+<figure class="diagram"><div class="mermaid">sequenceDiagram
+    autonumber
+    actor User as User
+    participant FrontDoor as Front-Door Personal Agent (ZDR Flash)
+    participant Guard as Privacy Guard (pre_tool_call hook)
+    participant LabDeep as Lab-Deep Worker (Frontier Model)
+
+    User-&gt;&gt;FrontDoor: &quot;My 3-year-old drank about 200 mL of cleaner [photo]. What should I do?&quot;
+    Note over FrontDoor: 1. Immediate safety response
+    FrontDoor--&gt;&gt;User: &quot;Call your local poison centre or emergency service now.&lt;br/&gt;Keep the product container to hand. I can help organise the details while you call.&quot;
+    Note over FrontDoor: 2. Removes identifiers&lt;br/&gt;3. Drafts a brief without the photo
+    FrontDoor-&gt;&gt;Guard: delegate_task(brief)
+    Note over Guard: Checks configured terms,&lt;br/&gt;emails, phone numbers, tokens and paths
+    alt No configured identifier detected
+        Guard--&gt;&gt;LabDeep: Dispatches sanitised brief unchanged
+        Note over LabDeep: General analysis for follow-up
+        LabDeep--&gt;&gt;FrontDoor: Returns general analysis
+        Note over FrontDoor: 4. Re-associates general analysis&lt;br/&gt;with family context in the main session
+        FrontDoor--&gt;&gt;User: Summarises without delaying expert help
+    else Configured identifier detected
+        Guard--xFrontDoor: Returns BLOCK directive &amp; generic category error
+        Note over FrontDoor: Revises brief locally or aborts external delegation
+    end</div><figcaption>An emergency handoff through the privacy guard</figcaption></figure>
+<p>The immediate call for expert help matters more than the model handoff in this example. <a href="https://www.poison.org/how-to-get-help-from-poison-control">Poison Control advises getting help at once for suspected poisoning</a>; the escalation illustrates how the agent can handle additional context without delaying that step.</p>
+<p>I call this <em>inverted delegation</em> because the conventional pattern often uses an expensive frontier model to plan the work and dispatch smaller agents to carry it out.</p>
+<p>This keeps the family context away from the lab worker. The main agent&#39;s ZDR inference provider may still see that context when it prepares the brief or presents the answer; re-association in the main session is not the same as keeping every inference local.</p>
+<p><strong>To set this up in Hermes</strong>, I use the <a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/delegation#model-override">subagent delegation model override</a>. This shows the intended alias-based configuration; while the <a href="https://github.com/NousResearch/hermes-agent/pull/119331">alias-resolution PR</a> remains open, check your Hermes version and use a directly supported model identifier for delegation:</p>
+<pre><code class="language-yaml"># .hermes/config.yaml
+delegation:
+  model: lab-deep  # illustrative alias; use a supported model ID until alias resolution is available
+  provider: openai-codex
+  max_concurrent_children: 1
+  max_spawn_depth: 1
+  orchestrator_enabled: false</code></pre>
+<p>The last three lines limit concurrency and nesting. I am not setting up a research or coding swarm; this is a personal assistant that sends difficult questions to a more capable worker when needed.</p>
+<p>The <code>SOUL.md</code> also contains guidance on when to escalate, for example:</p>
+<pre><code class="language-markdown"># SOUL.md
+[...]
+## Internal escalation and privacy policy
+This agent handles ordinary requests with the everyday assistant configuration. Users must never be asked to choose a model, agent, or delegation method.
+
+Answer routine, low-consequence requests directly: family-fact retrieval, reminders, ordinary scheduling, routine recipes, shopping lists, everyday explanations, and simple planning.
+
+For consequential or materially uncertain requests, acknowledge briefly in plain language that you are checking carefully, then delegate internally to the expert worker. This includes non-trivial health or medical questions; medication; child health; urgent risk assessment; treatment choices; safety; significant legal, financial, insurance, tax, or contractual decisions; substantial research; complex planning with interacting constraints. Do not escalate merely because a request is longer or unfamiliar. Do not create separate lab-deep workers for individual subtasks, do not fan out research into multiple expert workers, and do not delegate again after the expert returns. The expert worker should provide one consolidated analysis for the main agent to review and present locally.
+
+Before external delegation, prepare a self-contained, minimum-necessary, de-identified brief. Do not send names; precise addresses or locations; phone numbers; email addresses; account, identity, financial, medical-record, or authentication identifiers; raw family-memory entries; original emails, messages, documents, photos, screenshots, voice recordings, or attachments. Replace people with generic roles such as `adult A` or `child A`; use only clinically relevant age bands, broad geography, relative dates, and generalised constraints. Do not combine rare personal facts in a way likely to re-identify someone.
+
+External workers provide generic research, analysis, options, and draft plans only. Re-associate their findings with private family context only in this agent's main session.
+[...]</code></pre>
+<h2 id="4-block-unsafe-delegation-at-the-handoff">4. Block unsafe delegation at the handoff</h2>
+<p>Instructions in <code>SOUL.md</code> help the agent prepare a careful brief, but they can fail. I want a procedural check at the handoff too.</p>
+<p>The privacy guard checks the proposed delegation for recognised identifiers before the worker starts. I have kept it simple: it does not redact or rewrite the brief. It blocks the call and asks the parent agent to correct it. You can also change which private terms it looks for. This is a deterministic check for specified patterns, not proof that a brief cannot identify someone.</p>
+<p>I built this as a Hermes plugin with a <code>pre_tool_call</code> hook on <code>delegate_task</code>: <a href="https://github.com/remi-td/hermes-privacy-guard"><code>hermes-privacy-guard</code></a>. It is running in my live setup.</p>
+<figure class="diagram"><div class="mermaid">flowchart TD
+    Call[&quot;Parent Agent proposes delegation call&quot;] --&gt; Hook[&quot;Hermes Privacy Guard: pre_tool_call hook&quot;]
+    Hook --&gt; Scan{&quot;Scan goal &amp; context against&lt;br/&gt;0600 private dictionary, emails,&lt;br/&gt;phones, tokens, URLs, paths&quot;}
+
+    Scan --&gt;|&quot;Configured pattern detected&quot;| Block[&quot;BLOCK Directive&quot;]
+    Scan --&gt;|&quot;No configured pattern detected&quot;| Allow[&quot;ALLOW Directive&quot;]
+
+    Block --&gt; NoSpawn[&quot;Subagent is never spawned&quot;]
+    Block --&gt; AuditBlock[&quot;Write PII-free JSONL audit receipt&lt;br/&gt;(timestamp, schema, category counts)&quot;]
+    Block --&gt; ReturnErr[&quot;Return generic category errors to parent agent&quot;]
+    ReturnErr --&gt; ParentHandle[&quot;Parent agent revises brief locally or aborts&quot;]
+
+    Allow --&gt; SpawnChild[&quot;Spawn Lab-Deep subagent unchanged&quot;]
+    Allow --&gt; AuditAllow[&quot;Write PII-free JSONL audit receipt (allowed)&quot;]
+    SpawnChild --&gt; Exec[&quot;Child executes with fresh session &amp; no memory tool&quot;]</div><figcaption>How the privacy guard handles a delegation request</figcaption></figure>
+<p>The plugin does not rewrite, substitute, or forward modified text. If it detects a configured private term (stored in a local dictionary), an email address, a phone number, a credential token, or a private filesystem path, it blocks the handoff.</p>
+<p>The plugin blocks a detected privacy violation before the child is spawned. The parent agent receives a generic error receipt:</p>
+<blockquote>
+<p><code>Privacy broker blocked delegation: detected [email, phone]. Prepare a new self-contained request using generic roles and no identifiers.</code></p>
+</blockquote>
+<p>The parent agent must prepare a new, more general brief or keep the task local. The audit log records metadata and category counts, such as <code>{&quot;email&quot;: 1, &quot;phone&quot;: 1}</code>, without storing the matched text.</p>
+<h2 id="5-treat-memory-layers-as-different-access-surfaces">5. Treat memory layers as different access surfaces</h2>
+<p>I think of the agent&#39;s memory in three layers:</p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>What it is for</th>
+<th>What to watch</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>SOUL.md</code>, <code>USER.md</code>, <code>MEMORY.md</code></td>
+<td>Short, slow-changing context supplied to the main agent</td>
+<td>Anything placed here may enter many prompts.</td>
+</tr>
+<tr>
+<td>Memory provider</td>
+<td>Facts and entities retrieved when needed</td>
+<td>The retrieval tool is a useful access boundary, provided a child cannot reach the store by another route.</td>
+</tr>
+<tr>
+<td>Documents or vault</td>
+<td>Human-readable notes and records, for example an Obsidian vault</td>
+<td>A file-capable child on the same host may be able to read these directly.</td>
+</tr>
+</tbody></table>
+<p>This tiering mainly helps the agent find the right context. It becomes a privacy tool only when the runtime actually enforces who can access each layer. Withholding a memory tool helps; it does not, on its own, protect files on a shared filesystem.</p>
+<h2 id="6-keep-most-web-extraction-local">6. Keep most web extraction local</h2>
+<p>The next backdoor for information leakage—or perhaps the first, historically—is web search and extraction. Firecrawl is an excellent service, but if every search and page extraction goes through it, it becomes a full-HD CCTV camera on your agent&#39;s online life, and yours by extension. It is not cheap either: if research is part of your daily agent routine, the free monthly credits go quickly.</p>
+<p>Search and extraction are two different jobs, so I handle them separately.</p>
+<p><strong>Web search:</strong> Many playbooks point to the <a href="https://docs.searxng.org/">SearXNG metasearch engine</a>, which is a great tool. But in the configuration I wanted, it would still send queries to upstream services. Self-hosting the metasearch layer would not, by itself, solve the identification problem. I ended up using <a href="https://brave.com/search/api/">Brave Search</a> directly. For me, it offered the best balance of useful results, price and privacy.</p>
+<p><strong>Web extraction:</strong> This is where Firecrawl stands out. It is open source and <a href="https://docs.firecrawl.dev/contributing/self-host">self-hostable</a>, but the setup I looked at meant running several services, databases and a message queue. I want good-enough privacy, not a data centre that keeps me up at night and heats the basement in winter. The simplest functional alternative I found was <a href="https://trafilatura.readthedocs.io/">Trafilatura</a>. It has limits, especially with pages that need JavaScript, but it is light and fast. My setup sends extraction requests to Trafilatura first and falls back to Firecrawl Cloud for the difficult pages. I monitor it daily; roughly 90% of my requests are handled locally. Good enough.</p>
+<p><a href="https://github.com/remi-td/hermes-web-extract-router">Here is the web extraction router as a Hermes plugin.</a></p>
+<h2 id="7-give-the-agent-its-own-mail-and-calendar">7. Give the agent its own mail and calendar</h2>
+<p>Mail is where I cannot find a good-enough compromise with direct access to my own inbox. Frankly, some current agent mail practices are simply mind-blowing to me: give a non-deterministic system the keys to your whole mailbox, perhaps let it send from your address too, and hope for the best?</p>
+<p>Whatever privacy trade-off you have already made when choosing an email provider, giving an agent access to that mailbox is another decision entirely:</p>
+<ul>
+<li><strong>Inbound:</strong> An agent reading every message is an open invitation to a world-wide prompt-injection challenge. A malicious sender could take control of your agent and server.</li>
+<li><strong>Outbound:</strong> Once the agent can press <em>Send</em> from your address, it is hard to put deterministic checks between its draft and someone else&#39;s inbox.</li>
+</ul>
+<p>So my agents get their own mailboxes. The flow is:</p>
+<p><code>Agent ↔ Agent mailbox ↔ My mailbox ↔ Me</code></p>
+<p>It is less convenient than having an agent read over my shoulder and draft directly in my mailbox. I have to endure the pain of <em>clicking Forward</em>. I can live with that.</p>
+<p>I also give up agent triage of my entire inbox. To me, that belongs at the mailbox layer. Spam filters, folders and forwarding rules are boring to set up, but they can do a great deal without giving the agent every message.</p>
+<p>Calendar management follows the same pattern. The agent can keep reminders and tentative blocks in its own working calendar, including distant events that would clutter mine. When something belongs on my calendar, it sends an invitation for me to accept. I think of its calendar as another kind of long-horizon memory: useful to the agent, but not automatically a commitment made by me.</p>
+<p>Concretely, I host a <a href="https://stalw.art/">Stalwart</a> mail server on the same infrastructure, with dedicated mailboxes for my agents. The server accepts inbound mail only from the end users&#39; addresses and allows outbound mail only to them. That policy lives outside the agent workspace. A couple of Hermes skills then teach the agents how to work within those limits.</p>
+<h2 id="8-choose-the-messaging-channel-deliberately">8. Choose the messaging channel deliberately</h2>
+<p>Obviously, no personal agent feels complete without a chat interface in your preferred messaging app. I agree that it is useful. But the chat app can quietly undo much of this work.</p>
+<p>Hermes&#39;s <a href="https://hermes-agent.nousresearch.com/docs/user-guide/messaging/telegram/">Telegram integration</a> is convenient and feature-rich. It uses Telegram&#39;s Bot API. The bot process can run on your own host, but bot conversations use Telegram cloud chats, which <a href="https://telegram.org/privacy">Telegram stores on its servers</a>. The <a href="https://core.telegram.org/api/bots/ids">official Bot API does not support Secret Chats</a>. Restricting who can talk to the bot is sensible access control, but it does not change that transport and storage model.</p>
+<p>For my personal agent, I do not find that privacy trade-off acceptable.</p>
+<p><a href="https://support.signal.org/hc/en-us/articles/360007320391-Is-it-private-Can-I-trust-it">Signal</a> gives me end-to-end encrypted conversations by default, and Hermes can connect through a local <a href="https://hermes-agent.nousresearch.com/docs/user-guide/messaging/signal"><code>signal-cli</code> daemon</a>. Signal <a href="https://signal.org/blog/signal-is-expensive/">temporarily queues encrypted messages</a> for delivery; it cannot read their content. The daemon decrypts messages on my host, so I still have to protect that endpoint and the agent&#39;s permissions. Of the options I have tried, this is the balance of privacy and operational effort I can live with.</p>
+<h2 id="how-well-does-this-work">How well does this work?</h2>
+<p>You may well gain privacy, but you won&#39;t achieve secrecy.</p>
+<p>You can use frontier intelligence at a discounted price without having to settle the difference with the full picture of your life.</p>
+<p>The gateway still sees requests sent through it. A ZDR provider still processes your information. A web query can reveal intent. Deterministic privacy checks can miss unusual combinations of identifying facts; AI-based checks may catch more, but they are non-deterministic too. A child agent with broad local tools may reach information it was never meant to receive.</p>
+<p>There is also an operational cost to every boundary. Keys, aliases, hooks, mail rules and tool permissions can drift.</p>
+<p>The point is to choose those boundaries and trade-offs consciously. Keep the durable picture of your life close, send smaller pieces out when the benefit warrants it, and still use the models that make an agent genuinely useful.</p>
+</article>
+  </main>
+  <footer class="site-footer"><span>Good-enough privacy with Hermes Agent</span><a href="#article">Back to top ↑</a></footer>
+</body>
+</html>

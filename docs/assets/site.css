@@ -1,0 +1,76 @@
+:root {
+  color-scheme: light;
+  --paper: #fbfaf7;
+  --ink: #20312c;
+  --muted: #60736b;
+  --accent: #176b55;
+  --rule: #d9dfd8;
+  --panel: #f0f3ed;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: Georgia, 'Times New Roman', serif; }
+a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: .16em; }
+a:hover { color: #0b4738; }
+img { max-width: 100%; height: auto; }
+:focus-visible { outline: 3px solid #a2722d; outline-offset: 3px; }
+
+.skip-link { position: absolute; left: 1rem; top: -5rem; z-index: 10; padding: .65rem 1rem; background: white; font-family: Arial, sans-serif; }
+.skip-link:focus { top: 1rem; }
+.site-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 72px; padding: 0 clamp(1.25rem, 5vw, 5rem); border-bottom: 1px solid var(--rule); font-family: Arial, Helvetica, sans-serif; }
+.site-header a { text-decoration: none; }
+.site-mark { display: inline-flex; align-items: center; gap: .65rem; color: var(--ink); font-size: .95rem; font-weight: 700; letter-spacing: -.02em; }
+.mark-symbol { display: inline-grid; place-items: center; width: 27px; height: 27px; border-radius: 6px; background: #173f35; color: #e7efdd; font-size: 1.25rem; line-height: 1; }
+.header-link { color: var(--muted); font-size: .82rem; font-weight: 600; }
+.header-link span { padding-left: .2rem; }
+
+.hero { position: relative; overflow: hidden; border-bottom: 1px solid var(--rule); background: radial-gradient(circle at 85% 10%, #ddece2 0, transparent 31%), linear-gradient(135deg, #f7f7f0 0%, #eef3ec 100%); }
+.hero::after { content: ''; position: absolute; right: -95px; bottom: -245px; width: min(52vw, 600px); aspect-ratio: 1; border: 1px solid #bed2c5; border-radius: 50%; box-shadow: 0 0 0 75px #ffffff35, 0 0 0 76px #bed2c560, 0 0 0 150px #ffffff25, 0 0 0 151px #bed2c555; pointer-events: none; }
+.hero-inner { position: relative; z-index: 1; max-width: 1040px; margin: 0 auto; padding: clamp(4.5rem, 9vw, 8rem) 1.5rem clamp(4.2rem, 8vw, 7rem); }
+.eyebrow { margin: 0 0 1.7rem; color: var(--accent); font: 700 .73rem/1.4 Arial, Helvetica, sans-serif; letter-spacing: .15em; text-transform: uppercase; }
+h1 { max-width: 870px; margin: 0; color: #173c32; font-size: clamp(3rem, 6.8vw, 5.8rem); font-weight: 400; line-height: 1.07; letter-spacing: -.065em; }
+.dek { max-width: 570px; margin: 1.65rem 0 2.5rem; color: #4d6459; font-size: clamp(1.2rem, 2vw, 1.5rem); font-style: italic; line-height: 1.5; }
+.read-link { display: inline-flex; align-items: center; gap: .8rem; border-bottom: 1px solid #6e9a82; padding-bottom: .4rem; font: 700 .79rem/1.4 Arial, Helvetica, sans-serif; letter-spacing: .1em; text-decoration: none; text-transform: uppercase; }
+.read-link span { font-size: 1.1rem; }
+
+.article-body { max-width: 760px; margin: 0 auto; padding: 4rem 1.5rem 7rem; font-size: 1.16rem; line-height: 1.72; }
+.article-body > :first-child { margin-top: 0; }
+.article-body h2, .article-body h3 { scroll-margin-top: 1.5rem; color: #193d33; font-family: Arial, Helvetica, sans-serif; line-height: 1.22; letter-spacing: -.04em; }
+.article-body h2 { margin: 4rem 0 1.35rem; font-size: clamp(1.75rem, 3vw, 2.25rem); }
+.article-body h3 { margin: 2.8rem 0 1rem; font-size: 1.35rem; }
+.article-body p { margin: 0 0 1.45rem; }
+.article-body strong { color: #1c493b; }
+.article-body ul, .article-body ol { padding-left: 1.55rem; margin: 0 0 1.8rem; }
+.article-body li { padding-left: .3rem; margin: .5rem 0; }
+.article-body li::marker { color: var(--accent); }
+.article-body > ol:first-of-type { margin: 2rem 0 3rem; padding: 1.3rem 1.4rem 1.3rem 3.1rem; border-left: 3px solid #75a68c; background: var(--panel); font-size: 1rem; line-height: 1.5; }
+.article-body > ol:first-of-type li { margin: .46rem 0; }
+.article-body > p > img { display: block; width: min(1080px, calc(100vw - 3rem)); max-width: none; height: auto; margin: 2.5rem 0 2.5rem 50%; transform: translateX(-50%); border: 1px solid var(--rule); border-radius: 8px; background: white; }
+.article-body blockquote { margin: 1.8rem 0; padding: .2rem 0 .2rem 1.25rem; border-left: 3px solid #8aad9c; color: #46594f; }
+.article-body blockquote p { margin-bottom: 0; }
+.article-body pre { max-width: 100%; overflow-x: auto; margin: 1.4rem 0 2rem; padding: 1.25rem 1.4rem; border-radius: 8px; background: #182b28; color: #f1f4eb; font: .86rem/1.55 'SFMono-Regular', Consolas, monospace; tab-size: 2; }
+.article-body :not(pre) > code { overflow-wrap: anywhere; padding: .08em .28em; border-radius: 3px; background: #e9eee8; font: .82em/1.4 'SFMono-Regular', Consolas, monospace; }
+.article-body table { display: block; width: 100%; overflow-x: auto; border-collapse: collapse; margin: 1.8rem 0 2.2rem; font: .9rem/1.55 Arial, Helvetica, sans-serif; }
+.article-body th, .article-body td { min-width: 130px; padding: .8rem .9rem; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; }
+.article-body th { color: #224d3d; background: #e8eee7; font-weight: 700; }
+.article-body tr:nth-child(even) td { background: #f6f7f3; }
+.diagram { width: min(1040px, calc(100vw - 3rem)); max-width: none; overflow-x: auto; margin: 2.3rem 0 2.8rem 50%; padding: 1.4rem; transform: translateX(-50%); border: 1px solid var(--rule); border-radius: 8px; background: #fff; text-align: center; }
+.diagram .mermaid { min-width: 630px; }
+.diagram svg { max-width: 100%; height: auto; }
+.diagram figcaption { margin-top: 1rem; color: var(--muted); font: .78rem/1.5 Arial, Helvetica, sans-serif; }
+.site-footer { display: flex; justify-content: space-between; gap: 1rem; padding: 1.8rem clamp(1.25rem, 5vw, 5rem); border-top: 1px solid var(--rule); color: var(--muted); font: .8rem/1.5 Arial, Helvetica, sans-serif; }
+
+@media (max-width: 650px) {
+  .site-header { min-height: 62px; }
+  .hero-inner { padding-top: 4.5rem; }
+  .hero::after { opacity: .35; }
+  .article-body { padding-top: 3rem; font-size: 1.05rem; line-height: 1.68; }
+  .article-body h2 { margin-top: 3.2rem; }
+  .article-body > ol:first-of-type { padding-left: 2.4rem; }
+  .diagram { padding: 1rem .75rem; }
+  .diagram .mermaid { min-width: 730px; }
+  .site-footer { flex-direction: column; }
+}
+
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }

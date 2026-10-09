@@ -1,0 +1,15 @@
+{
+  "name": "hermes-good-enough-privacy",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node src/build.mjs && esbuild src/diagrams.js --bundle --minify --format=esm --target=es2020 --outfile=docs/assets/diagrams.js",
+    "check": "node src/check.mjs"
+  },
+  "type": "module",
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "marked": "^18.1.0",
+    "mermaid": "^12.1.0"
+  }
+}
