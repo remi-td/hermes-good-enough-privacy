@@ -37,13 +37,15 @@ const article = marked.parse(body, { renderer, gfm: true }).replace(
 );
 if (diagramIndex !== 3) throw new Error(`Expected 3 Mermaid diagrams, found ${diagramIndex}`);
 if (article.includes('Good-enough%20privacy%20architecture')) throw new Error('Unresolved image path');
+const contents = article.match(/<ol>[\s\S]*?<\/ol>/)?.[0];
+if (!contents || (contents.match(/<li>/g) || []).length !== 8) throw new Error('Expected the eight-item contents list');
 
 const html = `<!doctype html>
 <html lang="en-GB">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#fbfaf7">
+  <meta name="theme-color" content="#faf9f5">
   <meta name="description" content="Eight patterns for a useful personal agent with more privacy: local memory, explicit data-policy lanes, de-identified delegation and deliberate communications.">
   <meta property="og:type" content="article">
   <meta property="og:title" content="${escapeHtml(title)}">
@@ -60,21 +62,24 @@ const html = `<!doctype html>
 <body>
   <a class="skip-link" href="#article">Skip to article</a>
   <header class="site-header">
-    <a class="site-mark" href="${siteUrl}" aria-label="Good-enough privacy, home"><span class="mark-symbol" aria-hidden="true">◈</span><span>Good-enough privacy</span></a>
-    <a class="header-link" href="https://github.com/remi-td/hermes-good-enough-privacy">View source <span aria-hidden="true">↗</span></a>
+    <a class="site-mark" href="${siteUrl}" aria-label="Good-enough privacy, home"><span class="mark-symbol" aria-hidden="true">R.</span><span>Rémi <span class="mark-divider">/</span> Essays</span></a>
+    <a class="header-link" href="https://github.com/remi-td/hermes-good-enough-privacy">GitHub source <span aria-hidden="true">↗</span></a>
   </header>
   <main id="article">
     <div class="hero">
       <div class="hero-inner">
-        <p class="eyebrow">A personal agent · Privacy by design</p>
+        <p class="eyebrow">Essay <span class="eyebrow-rule" aria-hidden="true"></span> Personal agents / Privacy</p>
         <h1>${escapeHtml(title)}</h1>
         <p class="dek">${escapeHtml(subtitle)}</p>
-        <a class="read-link" href="#if-you-want-to-enjoy-the-party-you-need-to-give-up-some-things">Read the essay <span aria-hidden="true">↓</span></a>
+        <div class="hero-foot"><a class="read-link" href="#if-you-want-to-enjoy-the-party-you-need-to-give-up-some-things">Read the essay <span aria-hidden="true">↓</span></a><span class="hero-count">Eight patterns · One personal setup</span></div>
       </div>
     </div>
-    <article class="article-body">${article}</article>
+    <div class="content-grid">
+      <nav class="section-nav" aria-label="Article contents"><p class="nav-label">In this essay</p>${contents}</nav>
+      <article class="article-body">${article}</article>
+    </div>
   </main>
-  <footer class="site-footer"><span>Good-enough privacy with Hermes Agent</span><a href="#article">Back to top ↑</a></footer>
+  <footer class="site-footer"><span>Rémi / Essays</span><a href="#article">Back to top ↑</a></footer>
 </body>
 </html>\n`;
 
