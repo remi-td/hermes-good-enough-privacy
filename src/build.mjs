@@ -32,7 +32,7 @@ renderer.code = function ({ text, lang }) {
 };
 
 const article = marked.parse(body, { renderer, gfm: true }).replace(
-  './Good-enough%20privacy%20architecture%20-%20Final.png',
+  './docs/assets/architecture.png',
   'assets/architecture.png'
 );
 if (diagramIndex !== 3) throw new Error(`Expected 3 Mermaid diagrams, found ${diagramIndex}`);
@@ -71,7 +71,7 @@ const html = `<!doctype html>
         <p class="eyebrow">Essay <span class="eyebrow-rule" aria-hidden="true"></span> Personal agents / Privacy</p>
         <h1>${escapeHtml(title)}</h1>
         <p class="dek">${escapeHtml(subtitle)}</p>
-        <div class="hero-foot"><a class="read-link" href="#if-you-want-to-enjoy-the-party-you-need-to-give-up-some-things">Read the essay <span aria-hidden="true">↓</span></a><span class="hero-count">Eight patterns · One personal setup</span></div>
+        <div class="hero-foot"><span class="hero-count">Eight patterns · One personal setup</span></div>
       </div>
     </div>
     <div class="content-grid">
@@ -84,6 +84,7 @@ const html = `<!doctype html>
 </html>\n`;
 
 fs.mkdirSync(docs, { recursive: true });
+fs.writeFileSync(path.join(root, 'README.md'), source);
 fs.writeFileSync(path.join(docs, 'index.html'), html);
 fs.writeFileSync(path.join(docs, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${siteUrl}</loc></url></urlset>\n`);
 fs.writeFileSync(path.join(docs, '.nojekyll'), '');

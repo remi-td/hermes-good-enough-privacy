@@ -19,7 +19,7 @@ The idea is simple in concept: use the discounted reasoning power of frontier mo
 
 Here is my setup for *good-enough privacy*, broken down into eight patterns.
 
-![A map of the local agent, its memory, and the external services used for inference, research and communication](./Good-enough%20privacy%20architecture%20-%20Final.png)
+![A map of the local agent, its memory, and the external services used for inference, research and communication](./docs/assets/architecture.png)
 
 1. [Keep memory separate from the model provider](#1-keep-memory-separate-from-the-model-provider).
 2. [Route tasks through explicit data-policy lanes](#2-route-tasks-through-explicit-data-policy-lanes).

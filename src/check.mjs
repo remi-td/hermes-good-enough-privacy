@@ -13,7 +13,9 @@ const checks = [
   [!html.includes('Good-enough%20privacy%20architecture'), 'resolved image path'],
   [fs.statSync(path.join(root, 'docs/assets/architecture.png')).size > 0, 'image asset'],
   [fs.statSync(path.join(root, 'docs/assets/diagrams.js')).size > 0, 'diagram bundle'],
-  [source.includes('## How well does this work?'), 'source conclusion']
+  [source.includes('## How well does this work?'), 'source conclusion'],
+  [fs.readFileSync(path.join(root, 'README.md'), 'utf8') === source, 'repository landing page matches the article'],
+  [source.includes('./docs/assets/architecture.png'), 'GitHub image path']
 ];
 for (const [ok, label] of checks) {
   if (!ok) throw new Error(`Check failed: ${label}`);

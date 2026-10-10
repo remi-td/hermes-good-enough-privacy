@@ -36,9 +36,7 @@ img { max-width: 100%; height: auto; }
 .eyebrow-rule { display: inline-block; width: 27px; height: 2px; background: var(--teal); }
 h1 { max-width: 1030px; margin: 0; color: var(--navy); font-size: clamp(3rem, 6.1vw, 5.65rem); font-weight: 750; letter-spacing: -.065em; line-height: 1.05; }
 .dek { max-width: 700px; margin: 1.8rem 0 0; color: #4a5963; font-size: clamp(1.17rem, 2vw, 1.5rem); font-weight: 400; line-height: 1.5; }
-.hero-foot { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 5rem; padding-top: 1.25rem; border-top: 2px solid var(--teal); }
-.read-link { display: inline-flex; align-items: center; gap: .6rem; color: var(--teal); font-size: .72rem; font-weight: 800; letter-spacing: .13em; text-decoration: none; text-transform: uppercase; }
-.read-link span { font-size: 1.05rem; }
+.hero-foot { display: flex; justify-content: flex-end; margin-top: 5rem; padding-top: 1.25rem; border-top: 2px solid var(--teal); }
 .hero-count { color: var(--muted); font-size: .75rem; font-weight: 600; letter-spacing: .03em; }
 
 .content-grid { display: grid; grid-template-columns: 230px minmax(0, 800px); gap: clamp(3rem, 7vw, 7.5rem); max-width: 1216px; margin: 0 auto; padding: 0 1.5rem; }
