@@ -32,8 +32,8 @@ renderer.code = function ({ text, lang }) {
 };
 
 const article = marked.parse(body, { renderer, gfm: true }).replace(
-  './docs/assets/architecture.png',
-  'assets/architecture.png'
+  './docs/assets/architecture-final.png',
+  'assets/architecture-final.png'
 );
 if (diagramIndex !== 3) throw new Error(`Expected 3 Mermaid diagrams, found ${diagramIndex}`);
 if (article.includes('Good-enough%20privacy%20architecture')) throw new Error('Unresolved image path');
@@ -51,7 +51,7 @@ const html = `<!doctype html>
   <meta property="og:title" content="${escapeHtml(title)}">
   <meta property="og:description" content="${escapeHtml(subtitle)}">
   <meta property="og:url" content="${siteUrl}">
-  <meta property="og:image" content="${siteUrl}assets/architecture.png">
+  <meta property="og:image" content="${siteUrl}assets/architecture-final.png">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="canonical" href="${siteUrl}">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
