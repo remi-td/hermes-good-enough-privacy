@@ -87,12 +87,11 @@ flowchart TD
 The harness owns the routing decision. For a ZDR lane, the retention requirement also needs enforcement at the gateway, for example with a dedicated key or guardrail. A client-side setting can be missed by an auxiliary task or changed during a future configuration edit. Both the gateway and the underlying inference provider need to meet the chosen policy. A ZDR label is a contractual and operational claim to check, not a guarantee that no information leaves your machine.
 
 ## 3. Inverted delegation: escalation to frontier intelligence
+But let's face it: even "free" models can get pretty expensive to use. A $20/month Codex, Gemini, or Claude subscription gives you access to frontier models at a fraction of the cost of API inference, whether or not they are open-weight models. So you are missing something if you are not using it.
 
-Frontier intelligence via API can be expensive at the volume I use. Consumer subscriptions to services such as OpenAI Codex, Claude or Gemini can make that reasoning much cheaper for me. The discount is hard to ignore.
+The issue is that these subscription endpoints typically don't provide the same Zero Data Retention assurances. Worse, the personal questions that need deeper reasoning are often among the most sensitive: medical enquiries, legal friction, financial distress...
 
-The issue is that the subscription endpoints I want to use do not give me the same Zero Data Retention (ZDR) assurance as my ZDR route. Worse, the personal questions that need deeper reasoning are often among the most sensitive: medical enquiries, legal friction, financial distress...
-
-**The pattern is escalation after de-identification**: a fast model on the ZDR route handles the first pass and, when needed, sends a de-identified brief to a more capable model that I treat as less private. When the worker returns, the first agent re-associates its analysis with private context and presents the answer.
+**The pattern is escalation after de-identification**: a fast model on the ZDR route handles the first pass and, when needed, sends a de-identified brief to a more-capable-less-private model. When the worker returns, the first model re-associates its analysis with private context and presents the answer.
 
 The following hypothetical emergency illustrates how the handoff works in my live setup.
 
@@ -122,13 +121,11 @@ sequenceDiagram
     end
 ```
 
-The immediate call for expert help matters more than the model handoff in this example. [Poison Control advises getting help at once for suspected poisoning](https://www.poison.org/how-to-get-help-from-poison-control); the escalation illustrates how the agent can handle additional context without delaying that step.
+I call this *inverted delegation* because the conventional pattern is often the opposite: use an expensive frontier model to plan the work and dispatch smaller agents to carry it out.
 
-I call this *inverted delegation* because the conventional pattern often uses an expensive frontier model to plan the work and dispatch smaller agents to carry it out.
+This keeps the private context away from the lab worker. The main agent's ZDR inference provider may still see that context when it prepares the brief or presents the answer; re-association in the main session is not the same as keeping every inference local.
 
-This keeps the family context away from the lab worker. The main agent's ZDR inference provider may still see that context when it prepares the brief or presents the answer; re-association in the main session is not the same as keeping every inference local.
-
-**To set this up in Hermes**, I use the [subagent delegation model override](https://hermes-agent.nousresearch.com/docs/user-guide/features/delegation#model-override). This shows the intended alias-based configuration; while the [alias-resolution PR](https://github.com/NousResearch/hermes-agent/pull/119331) remains open, check your Hermes version and use a directly supported model identifier for delegation:
+**To set this up in Hermes**, I use the [subagent delegation model override](https://hermes-agent.nousresearch.com/docs/user-guide/features/delegation#model-override). This shows the intended alias-based configuration:
 
 ```yaml
 # .hermes/config.yaml
@@ -140,7 +137,7 @@ delegation:
   orchestrator_enabled: false
 ```
 
-The last three lines limit concurrency and nesting. I am not setting up a research or coding swarm; this is a personal assistant that sends difficult questions to a more capable worker when needed.
+The last three lines limit concurrency and nesting: we are not setting up a research or coding swarm; this is a personal assistant that sends difficult questions to a more capable worker when needed.
 
 The `SOUL.md` also contains guidance on when to escalate, for example:
 
@@ -196,15 +193,15 @@ The parent agent must prepare a new, more general brief or keep the task local. 
 
 ## 5. Treat memory layers as different access surfaces
 
-I think of the agent's memory in three layers:
+Memory tiering satisfies access requirements rather than data protection ones, but different tiers present different data protection problems and options.
 
-| Layer | What it is for | What to watch |
+With Hermes, you have three layers:
+
+| Layer | What it is for | How to secure & What to watch |
 |---|---|---|
-| `SOUL.md`, `USER.md`, `MEMORY.md` | Short, slow-changing context supplied to the main agent | Anything placed here may enter many prompts. |
-| Memory provider | Facts and entities retrieved when needed | The retrieval tool is a useful access boundary, provided a child cannot reach the store by another route. |
-| Documents or vault | Human-readable notes and records, for example an Obsidian vault | A file-capable child on the same host may be able to read these directly. |
-
-This tiering mainly helps the agent find the right context. It becomes a privacy tool only when the runtime actually enforces who can access each layer. Withholding a memory tool helps; it does not, on its own, protect files on a shared filesystem.
+| `SOUL.md`, `USER.md`, `MEMORY.md` | Short, slow-changing context supplied to the main agent | Anything placed here is pasted in the LLM prompt, regardless the question. |
+| Memory provider (eg. Hindsight, Holographic...) | Facts and entity knowledge retrieved when needed | The retrieval tool is the access boundary. You can control what model or profile is allowed to use this tool. Watch out for other store access routes (eg. API keys, database file access)). |
+| Documents or vault | Human-readable notes and records, for example an Obsidian vault | Secured by file system access control. A file-capable child on the same host may be able to find and read these directly. |
 
 ## 6. Keep most web extraction local
 
