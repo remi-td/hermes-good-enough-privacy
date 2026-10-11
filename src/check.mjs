@@ -14,6 +14,8 @@ const checks = [
   [fs.statSync(path.join(root, 'docs/assets/architecture-final.png')).size > 0, 'image asset'],
   [fs.statSync(path.join(root, 'docs/assets/diagrams.js')).size > 0, 'diagram bundle'],
   [source.includes('## How well does this work?'), 'source conclusion'],
+  [fs.lstatSync(path.join(root, 'README.md')).isSymbolicLink(), 'repository landing page is a symlink'],
+  [fs.readlinkSync(path.join(root, 'README.md')) === 'article.md', 'repository landing page targets article.md'],
   [fs.readFileSync(path.join(root, 'README.md'), 'utf8') === source, 'repository landing page matches the article'],
   [source.includes('./docs/assets/architecture-final.png'), 'GitHub image path']
 ];

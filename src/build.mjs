@@ -86,7 +86,6 @@ const html = `<!doctype html>
 </html>\n`;
 
 fs.mkdirSync(docs, { recursive: true });
-fs.writeFileSync(path.join(root, 'README.md'), source);
 fs.writeFileSync(path.join(docs, 'index.html'), html);
 fs.writeFileSync(path.join(docs, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${siteUrl}</loc></url></urlset>\n`);
 fs.writeFileSync(path.join(docs, '.nojekyll'), '');

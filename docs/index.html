@@ -7,7 +7,7 @@
   <meta name="description" content="Eight patterns for a useful personal agent with more privacy: local memory, explicit data-policy lanes, de-identified delegation and deliberate communications.">
   <meta property="og:type" content="article">
   <meta property="og:title" content="Good-enough privacy with Hermes Agent">
-  <meta property="og:description" content="Patterns for a useful personal agent with more privacy.">
+  <meta property="og:description" content="Some patterns I use to build myself a useful personal agent with acceptable privacy tradeoffs.">
   <meta property="og:url" content="https://remi-td.github.io/hermes-good-enough-privacy/">
   <meta property="og:image" content="https://remi-td.github.io/hermes-good-enough-privacy/assets/architecture-final.png">
   <meta name="twitter:card" content="summary_large_image">
@@ -31,7 +31,7 @@
       <div class="hero-inner">
         <p class="eyebrow">Personal agents / Privacy</p>
         <h1>Good-enough privacy with Hermes Agent</h1>
-        <p class="dek">Patterns for a useful personal agent with more privacy.</p>
+        <p class="dek">Some patterns I use to build myself a useful personal agent with acceptable privacy tradeoffs.</p>
       </div>
     </div>
     <div class="content-grid">
@@ -47,8 +47,7 @@
 </ol></nav>
       <article class="article-body"><h2 id="if-you-want-to-enjoy-the-party-you-need-to-give-up-some-things">If you want to enjoy the party, you need to give up some things</h2>
 <p>We never have full privacy. To exist in the world is to emit information.
-A personal agent makes the trade-off sharper: the more it knows about your life, the more useful it becomes, and the more consequential it is when that knowledge travels.</p>
-<p>Privacy, then, is about choosing where the pieces of your life go, who gets to put them together, and which trade-offs you can live with.</p>
+Privacy, then, is about choosing where the pieces of your life go, who gets to put them together, and which trade-offs you can live with.</p>
 <p>The internet is awash with easier stories to tell. For agent privacy, one playbook is to run everything locally. Pull an open-weight model into Ollama or <code>llama.cpp</code>, let your workstation sound like a jet engine all night, and wake up to a half-finished research report. I see the appeal, but for the complex reasoning I want, local inference still asks for more hardware, waiting or compromise in quality than I am willing to accept.</p>
 <p>On the other side sits the consumer default: use ChatGPT, Muse, or a &quot;second brain&quot; app. You get frontier intelligence for a modest monthly fee, but the top-up may be a growing record of your personal life. Every preference, medical worry, domestic squabble and late-night panic you share can become part of someone else&#39;s product.</p>
 <p><strong>Good-enough privacy</strong> is the pragmatic middle way: keep the durable picture of your life under your control, while using outside models when the benefit warrants it.</p>
@@ -133,9 +132,9 @@ A personal agent makes the trade-off sharper: the more it knows about your life,
     N --&gt; O[Re-associate with private context locally]</div><figcaption>How requests move through the data-policy lanes</figcaption></figure>
 <p>The harness owns the routing decision. For a ZDR lane, the retention requirement also needs enforcement at the gateway, for example with a dedicated key or guardrail. A client-side setting can be missed by an auxiliary task or changed during a future configuration edit. Both the gateway and the underlying inference provider need to meet the chosen policy. A ZDR label is a contractual and operational claim to check, not a guarantee that no information leaves your machine.</p>
 <h2 id="3-inverted-delegation-escalation-to-frontier-intelligence">3. Inverted delegation: escalation to frontier intelligence</h2>
-<p>Frontier intelligence via API can be expensive at the volume I use. Consumer subscriptions to services such as OpenAI Codex, Claude or Gemini can make that reasoning much cheaper for me. The discount is hard to ignore.</p>
-<p>The issue is that the subscription endpoints I want to use do not give me the same Zero Data Retention (ZDR) assurance as my ZDR route. Worse, the personal questions that need deeper reasoning are often among the most sensitive: medical enquiries, legal friction, financial distress...</p>
-<p><strong>The pattern is escalation after de-identification</strong>: a fast model on the ZDR route handles the first pass and, when needed, sends a de-identified brief to a more capable model that I treat as less private. When the worker returns, the first agent re-associates its analysis with private context and presents the answer.</p>
+<p>But let&#39;s face it: even &quot;free&quot; models can get pretty expensive to use. A $20/month Codex, Gemini, or Claude subscription gives you access to frontier models at a fraction of the cost of API inference, whether or not they are open-weight models. So you are missing something if you are not using it.</p>
+<p>The issue is that these subscription endpoints typically don&#39;t provide the same Zero Data Retention assurances. Worse, the personal questions that need deeper reasoning are often among the most sensitive: medical enquiries, legal friction, financial distress...</p>
+<p><strong>The pattern is escalation after de-identification</strong>: a fast model on the ZDR route handles the first pass and, when needed, sends a de-identified brief to a more-capable-less-private model. When the worker returns, the first model re-associates its analysis with private context and presents the answer.</p>
 <p>The following hypothetical emergency illustrates how the handoff works in my live setup.</p>
 <figure class="diagram"><div class="mermaid">sequenceDiagram
     autonumber
@@ -160,10 +159,9 @@ A personal agent makes the trade-off sharper: the more it knows about your life,
         Guard--xFrontDoor: Returns BLOCK directive &amp; generic category error
         Note over FrontDoor: Revises brief locally or aborts external delegation
     end</div><figcaption>An emergency handoff through the privacy guard</figcaption></figure>
-<p>The immediate call for expert help matters more than the model handoff in this example. <a href="https://www.poison.org/how-to-get-help-from-poison-control">Poison Control advises getting help at once for suspected poisoning</a>; the escalation illustrates how the agent can handle additional context without delaying that step.</p>
-<p>I call this <em>inverted delegation</em> because the conventional pattern often uses an expensive frontier model to plan the work and dispatch smaller agents to carry it out.</p>
-<p>This keeps the family context away from the lab worker. The main agent&#39;s ZDR inference provider may still see that context when it prepares the brief or presents the answer; re-association in the main session is not the same as keeping every inference local.</p>
-<p><strong>To set this up in Hermes</strong>, I use the <a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/delegation#model-override">subagent delegation model override</a>. This shows the intended alias-based configuration; while the <a href="https://github.com/NousResearch/hermes-agent/pull/119331">alias-resolution PR</a> remains open, check your Hermes version and use a directly supported model identifier for delegation:</p>
+<p>I call this <em>inverted delegation</em> because the conventional pattern is often the opposite: use an expensive frontier model to plan the work and dispatch smaller agents to carry it out.</p>
+<p>This keeps the private context away from the lab worker. The main agent&#39;s ZDR inference provider may still see that context when it prepares the brief or presents the answer; re-association in the main session is not the same as keeping every inference local.</p>
+<p><strong>To set this up in Hermes</strong>, I use the <a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/delegation#model-override">subagent delegation model override</a>. This shows the intended alias-based configuration:</p>
 <pre><code class="language-yaml"># .hermes/config.yaml
 delegation:
   model: lab-deep  # illustrative alias; use a supported model ID until alias resolution is available
@@ -171,7 +169,7 @@ delegation:
   max_concurrent_children: 1
   max_spawn_depth: 1
   orchestrator_enabled: false</code></pre>
-<p>The last three lines limit concurrency and nesting. I am not setting up a research or coding swarm; this is a personal assistant that sends difficult questions to a more capable worker when needed.</p>
+<p>The last three lines limit concurrency and nesting: we are not setting up a research or coding swarm; this is a personal assistant that sends difficult questions to a more capable worker when needed.</p>
 <p>The <code>SOUL.md</code> also contains guidance on when to escalate, for example:</p>
 <pre><code class="language-markdown"># SOUL.md
 [...]
@@ -212,32 +210,32 @@ External workers provide generic research, analysis, options, and draft plans on
 </blockquote>
 <p>The parent agent must prepare a new, more general brief or keep the task local. The audit log records metadata and category counts, such as <code>{&quot;email&quot;: 1, &quot;phone&quot;: 1}</code>, without storing the matched text.</p>
 <h2 id="5-treat-memory-layers-as-different-access-surfaces">5. Treat memory layers as different access surfaces</h2>
-<p>I think of the agent&#39;s memory in three layers:</p>
+<p>Memory tiering satisfies access requirements rather than data protection ones, but different tiers present different data protection problems and options.</p>
+<p>With Hermes, you have three layers:</p>
 <table>
 <thead>
 <tr>
 <th>Layer</th>
 <th>What it is for</th>
-<th>What to watch</th>
+<th>How to secure &amp; What to watch</th>
 </tr>
 </thead>
 <tbody><tr>
 <td><code>SOUL.md</code>, <code>USER.md</code>, <code>MEMORY.md</code></td>
 <td>Short, slow-changing context supplied to the main agent</td>
-<td>Anything placed here may enter many prompts.</td>
+<td>Anything placed here is pasted in the LLM prompt, regardless the question.</td>
 </tr>
 <tr>
-<td>Memory provider</td>
-<td>Facts and entities retrieved when needed</td>
-<td>The retrieval tool is a useful access boundary, provided a child cannot reach the store by another route.</td>
+<td>Memory provider (eg. Hindsight, Holographic...)</td>
+<td>Facts and entity knowledge retrieved when needed</td>
+<td>The retrieval tool is the access boundary. You can control what model or profile is allowed to use this tool. Watch out for other store access routes (eg. API keys, database file access)).</td>
 </tr>
 <tr>
 <td>Documents or vault</td>
 <td>Human-readable notes and records, for example an Obsidian vault</td>
-<td>A file-capable child on the same host may be able to read these directly.</td>
+<td>Secured by file system access control. A file-capable child on the same host may be able to find and read these directly.</td>
 </tr>
 </tbody></table>
-<p>This tiering mainly helps the agent find the right context. It becomes a privacy tool only when the runtime actually enforces who can access each layer. Withholding a memory tool helps; it does not, on its own, protect files on a shared filesystem.</p>
 <h2 id="6-keep-most-web-extraction-local">6. Keep most web extraction local</h2>
 <p>The next backdoor for information leakage—or perhaps the first, historically—is web search and extraction. Firecrawl is an excellent service, but if every search and page extraction goes through it, it becomes a full-HD CCTV camera on your agent&#39;s online life, and yours by extension. It is not cheap either: if research is part of your daily agent routine, the free monthly credits go quickly.</p>
 <p>Search and extraction are two different jobs, so I handle them separately.</p>
