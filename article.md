@@ -1,12 +1,10 @@
 # Good-enough privacy with Hermes Agent
 
-*Patterns for a useful personal agent with more privacy.*
+*Some patterns I use to build myself a useful personal agent with acceptable privacy tradeoffs.*
 
 ## If you want to enjoy the party, you need to give up some things
 
 We never have full privacy. To exist in the world is to emit information.
-A personal agent makes the trade-off sharper: the more it knows about your life, the more useful it becomes, and the more consequential it is when that knowledge travels.
-
 Privacy, then, is about choosing where the pieces of your life go, who gets to put them together, and which trade-offs you can live with.
 
 The internet is awash with easier stories to tell. For agent privacy, one playbook is to run everything locally. Pull an open-weight model into Ollama or `llama.cpp`, let your workstation sound like a jet engine all night, and wake up to a half-finished research report. I see the appeal, but for the complex reasoning I want, local inference still asks for more hardware, waiting or compromise in quality than I am willing to accept.
